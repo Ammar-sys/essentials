@@ -6,6 +6,7 @@ import sys, traceback
 
 intents = discord.Intents.default()
 intents.members = True
+intents.reactions = True
 bot = commands.Bot(
     command_prefix='.',
     case_insensitive=True,
@@ -14,7 +15,7 @@ bot = commands.Bot(
 
 @bot.event
 async def on_ready():
-    print('Essentials has successfully booted up! | v.2 | Credit to Vixen and Ammar')
+    print('Essentials has successfully booted up! | v 2.0.0 | Credit to Vixen and Ammar')
 
 initial_extensions = [
     'discord_verification',
@@ -22,7 +23,8 @@ initial_extensions = [
     'events_jole',
     'erh',
     'eval',
-    'fun'
+    'fun',
+    'roblox_verification'
 ]
 
 if __name__ == "__main__":
