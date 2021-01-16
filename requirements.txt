@@ -1,0 +1,4 @@
+aiohttp==3.6.2
+lorem==0.1.1
+asyncpg==0.21.0
+discord==1.0.1
