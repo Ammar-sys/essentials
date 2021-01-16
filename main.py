@@ -46,9 +46,12 @@ bot.pool = loop.run_until_complete(asyncpg.create_pool(
                             password="Bruhbruh123",
                                     ))
 
-bot.token = "ur token here"
+def set_token():
+    token = open('./essentials_token.txt', 'r').read()
+    return token
+
 bot.run(
     # bot.token,
-    bot.token,
+    set_token(),
     reconnect=True
 )
