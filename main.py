@@ -24,7 +24,8 @@ initial_extensions = [
     'erh',
     'eval',
     'fun',
-    'roblox_verification'
+    'roblox_verification',
+    'reload'
 ]
 
 if __name__ == "__main__":
