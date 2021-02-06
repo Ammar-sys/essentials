@@ -113,7 +113,7 @@ class DisVerify(commands.Cog):
             )
             embedlol.timestamp = ctx.message.created_at
             async with aiohttp.ClientSession() as cs:
-                async with cs.get('http://nooonesad.pythonanywhere.com/api/') as images:
+                async with cs.get('https://ammarsysdev.pythonanywhere.com/api/img') as images:
                     images1 = await images.json()
                     random_image = images1["url"]
                     images.close()
@@ -121,7 +121,7 @@ class DisVerify(commands.Cog):
             embedlol.set_image(url=f"{random_image}")
             await ctx.send('I\'ve sent you a captcha in DMs.')
             await ctx.author.send(embed=embedlol)
-            bruh = images1["captcha"]
+            bruh = images1["solution"]
 
             def check(m):
                 return m.author == ctx.author and m.channel == ctx.author.dm_channel
