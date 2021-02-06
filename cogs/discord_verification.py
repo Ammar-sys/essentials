@@ -9,6 +9,7 @@ def disconfig_embed(ctx):
     )
     return embed
 
+
 async def make_role_id(ctx, role):
     if role.isdigit():
         a = ctx.guild.get_role(role)
@@ -31,16 +32,11 @@ async def make_role_id(ctx, role):
     else:
         return False
 
+
 async def role_mod_check(ctx, role):
-    role2 = ctx.guild.get_role(role)
-    if role2.permissions.kick_members or role2.permissions.ban_members or \
-            role2.permissions.view_audit_log or role2.permissions.manage_channels or role2.permissions.administrator or \
-            role2.permissions.manage_roles or role2.permissions.manage_nicknames or \
-            role2.permissions.manage_emojis or role2.permissions.manage_webhooks or role2.permissions.manage_messages or \
-            role2.permissions.mention_everyone:
+    role = ctx.guild.get_role(role)
+    if any(x for i, (_, x) in enumerate(list(role.permissions)) if i in [1, 2, 3, 4, 5, 13, 27, 28]):
         return True
-    else:
-        return False
 
 
 async def abuse_check(ctx, role):
@@ -66,16 +62,13 @@ class DisVerify(commands.Cog):
             abuse_mod = await role_mod_check(ctx, role.id)
             if abuse is False:
                 if abuse_mod is False:
-                    async with self.bot.pool.acquire() as connection:
-                        async with connection.transaction():
-                            await connection.execute(f'UPDATE verification SET roleid=$1, enabled=$2 WHERE guildid=$3;',
-                                                     role.id, True, ctx.guild.id)
+                    self.bot.pool.execute(f'UPDATE verification SET roleid=$1, enabled=$2 WHERE guildid=$3;',
+                                          role.id, True, ctx.guild.id)
                 else:
                     return await ctx.send('You may not set a role that has moderation permissions.')
             else:
                 return await ctx.send('You may not set a role that\'s higher or equal to your highest one.')
-        except Exception as e:
-            print(e)
+        except:
             return await ctx.send('Improper value passed!')
         await ctx.send(f'Successfully changed the config role to `{role.name}`!')
 
@@ -85,43 +78,27 @@ class DisVerify(commands.Cog):
         try:
             if a is False:
                 await self.bot.pool.execute(f'UPDATE verification SET enabled=$1 WHERE guildid=$2;', role,
-                                                 ctx.guild.id)
+                                            ctx.guild.id)
             else:
                 return await ctx.send('You may not enable the module until you setup discord verification.')
-        except Exception:
+        except:
             return await ctx.send('Improper value passed!')
-        await ctx.send(f'Successfully changed the value'
-                       f' to `{role}`!')
+        await ctx.send(f'Successfully changed the value to `{role}`!')
 
     async def is_empty(self, ctx):
         value = await self.bot.pool.fetchval(f'SELECT roleid FROM verification WHERE guildid={ctx.guild.id};')
 
         if value is None:
             return True
-        else:
-            return False
+        return False
 
     async def is_enabled_check(self, ctx):
-        value = await self.bot.pool.fetchval(f'SELECT enabled FROM verification WHERE guildid={ctx.guild.id};')
-        value2 = await self.bot.pool.fetchval(f'SELECT roleid FROM verification WHERE guildid={ctx.guild.id};')
-        role = ctx.guild.get_role(value2)
+        value = await self.bot.pool.fetchval(f'SELECT enabled, roleid FROM verification WHERE guildid={ctx.guild.id};')
+        role = ctx.guild.get_role(value["roleid"])
 
         if role is None:
             return False
-        else:
-            return value
-
-    async def hahalolpenis(self, ctx):
-        value = await self.bot.pool.fetchval(f'SELECT roleid FROM verification WHERE guildid={ctx.guild.id};')
-
         return value
-
-    @commands.command()
-    async def something(self, ctx):
-        async with self.bot.pool.acquire() as connection:
-            async with connection.transaction():
-                a = await connection.fetch(f'select * from verification;')
-                await ctx.send(a)
 
     @commands.command()
     @commands.cooldown(1, 60, commands.BucketType.user)
