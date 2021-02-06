@@ -1,0 +1,1 @@
+DELETE FROM roblox_ver WHERE guildid=$1;
