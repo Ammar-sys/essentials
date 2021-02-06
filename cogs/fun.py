@@ -4,6 +4,7 @@ from timeit import default_timer as timer
 import lorem
 import time
 import discord
+import random
 
 def calc(arg):
     if arg > 50:
@@ -18,39 +19,41 @@ class Fun(commands.Cog):
         self.bot = bot
 
     @commands.command()
+    @commands.max_concurrency(1, commands.BucketType.guild)
     async def cookie(self, ctx):
-        a = await ctx.send('first one to eat the cookie wins!!!')
+        a = await ctx.send('First one to eat the cookie wins!')
         await asyncio.sleep(3)
         await a.edit(content='3')
         await asyncio.sleep(1)
         await a.edit(content='2')
         await asyncio.sleep(1)
         await a.edit(content='1')
-        await asyncio.sleep(1)
+        await asyncio.sleep(1.0 + float(f'0.{random.randint(0, 10)}'))
         await a.add_reaction('🍪')
         start = timer()
 
-        def check(user_sk):
-            return user_sk.id != 727910779696971868
+        def check(*args):
+            return args[1].id != 731197041006346281 and args[0].message.id == a.id
 
         reaction, user = await self.bot.wait_for('reaction_add', timeout=60.0, check=check)
-        await a.add_reaction('🍪')
         if str(reaction) == '🍪':
             end = timer()
             if user.name == ctx.guild.me.name:
-                return await ctx.send('Something went wrong!')
-            await a.edit(content=f'{user.name} won in `{end - start}s`!!')
+                return await ctx.send('Something went wrong! Someone could be trying to cheat...')
+            await a.edit(content=f'{user.name} won in `{round(end - start, 5)}s`!')
 
     # credit to Stella for the idea and the copy paste check :D
     @commands.command()
     @commands.max_concurrency(1, commands.BucketType.guild)
     async def typeracer(self, ctx):
+        msg = await ctx.send('Starting soonly... be ready')
+        await asyncio.sleep(1)
         correct = lorem.sentence()
         display = ''.join(map("\u200b{}".format, correct))
         content = discord.Embed(title='Typeracer',
         description=f"Type this please: ***\n{display}***"
                                 )
-        await ctx.send(embed=content)
+        await msg.edit(embed=content)
 
         def m_2(m_s):
             return m_s.id != 727910779696971868 and m_s.content in [correct, display] and m_s.channel == ctx.channel
@@ -70,8 +73,8 @@ class Fun(commands.Cog):
                     avg_v2 = avg_func/round(else_/time_elp2)
                     avg_v3 = avg_v2 * 100
 
-                    await ctx.send(embed=discord.Embed(
-                                description=f'Good job {ctx.author.mention}, you have typing speed of `{round(else_/time_elp2)} wpm` it took you '
+                    await msg.edit(embed=discord.Embed(
+                                description=f'Good job {m.author.mention}, you have a typing speed of `{round(else_/time_elp2)} wpm` it took you '
                                 f'`{round(time_elp)}s` '
                                 f'and the lenght of the sentence was `{len(correct)}` characters. Your typing speed is '
                                 f'`{round(abs(avg_v3))}%` *{calc(round(else_/time_elp2))}*.'))
