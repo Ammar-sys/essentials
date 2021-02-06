@@ -3,18 +3,25 @@ import discord
 import random
 import asyncio
 
+"""
+        description='\n**SupportRole**\n`.ticketconfig supportrole <roleid/mention>`'
+                    '\n\n**Enabled**\n`.ticketconfig enabled <true/false>`'
+                    '\n\n**Channel**\n`.ticketconfig channel <channel_id>`'
+                    '\n\n**Clear**\n`.ticketconfig reset <module/all>`'
+                    '\n\n**Info**\n `.ticketconfig info <all>`'
+                    '\n\n**LogsChannel**\n `.ticketconfig logs <channel>`'
+"""
+
 def disconfig_embed(ctx):
-    embed = discord.Embed(title=f'{ctx.guild.name}')
-
-    embed.add_field(name='━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', value='_ _', inline=False)
-    embed.add_field(name='**SupportRole**', value='`.ticketconfig supportrole <roleid/mention>`', inline=True)
-    embed.add_field(name='**Enabled**', value='`.ticketconfig enabled <true/false>`', inline=True)
-    embed.add_field(name='**Channel**', value='`.ticketconfig channel <channel_id>`', inline=True)
-    embed.add_field(name='**Clear**', value='`.ticketconfig reset <module/all>`', inline=True)
-    embed.add_field(name='**Info**', value='`.ticketconfig info <all>`', inline=True)
-    embed.add_field(name='**LogsChannel**', value='`.ticketconfig logs <channel>`', inline=True)
-
-    embed.set_footer(text='.help <cmd> for more info')
+    embed = discord.Embed(
+        title=f'{ctx.guild.name}',
+        description='\n**SupportRole**\n`.ticketconfig supportrole <roleid/mention>`'
+                    '\n\n**Enabled**\n`.ticketconfig enabled <true/false>`'
+                    '\n\n**Channel**\n`.ticketconfig channel <channel_id>`'
+                    '\n\n**Clear**\n`.ticketconfig reset <module/all>`'
+                    '\n\n**Info**\n `.ticketconfig info <all>`'
+                    '\n\n**LogsChannel**\n `.ticketconfig logs <channel>`'
+    )
     return embed
 
 def random_char(y):
@@ -114,16 +121,15 @@ class DisVerify(commands.Cog):
         elif chnl_obj is not None:
             eskv2 = chnl_obj.name
 
-        embed = discord.Embed(title=f'Configuration for {ctx.guild.name}')
-
-        embed.add_field(name='━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', value='_ _', inline=False)
-        embed.add_field(name=f'**SupportRole**', value=f'`{esk}`', inline=True)
-        embed.add_field(name=f'**Enabled**', value=f'`{info[0]["enabled"]}`', inline=True)
-        embed.add_field(name=f'**Channel**', value=f'`{eskv2}`', inline=True)
-        embed.add_field(name=f'**LogsChannel**', value=f'`{eskv3}`', inline=True)
-
-        embed.set_footer(text='None means that it isn\'t there or the bot couldn\'t find it!')
-        await ctx.send(embed=embed)
+        em = discord.Embed(
+            title=f'Configuration for {ctx.guild.name}',
+            description=f'\n**SupportRole**\n`{esk}`'
+                        f'\n\n**Enabled**\n`{info[0]["enabled"]}`'
+                        f'\n\n**Channel**\n`{eskv2}`'
+                        f'\n\n**Logs Channel**\n `{eskv3}`'
+        )
+        em.set_footer(text='None means that it isn\'t there or the bot couldn\'t find it!')
+        await ctx.send(embed=em)
 
     @_helptic.command()
     @commands.has_permissions(manage_guild=True)
