@@ -1,5 +1,5 @@
 # essentials
-Essentials the discord bot in development. Currently, this version is unstable and shouldn't be used. If you do want to use it, make sure to change the PostgreSQL login information and set the appropriate bot token in the essentials_token file. For any information you may join our discord https://discord.gg/Fh5gmXQ
+Essentials the discord bot in development. Currently, this version is unstable and shouldn't be used. If you do want to use it, make sure to fill out the required data in the config.json file, this includes PostgreSQL database information aswell as a bot token. For any questions you may join our discord https://discord.gg/Fh5gmXQ
 
 # discord
 
@@ -16,3 +16,5 @@ or
 ```
 py -m pip install requirements.txt
 ```
+
+Fill out config.json, then run bot.py.
