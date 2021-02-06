@@ -3,19 +3,37 @@ import asyncio
 from discord.ext import commands
 import discord
 import sys, traceback
+import json
 
+async def get_prefix(bot_par, message):
+    if not message.guild:
+        return commands.when_mentioned_or(".")(bot_par, message)
+
+    data = await bot.pool.fetch('SELECT prefix FROM guilds WHERE guildid=$1;', message.guild.id)
+
+    return data[0]["prefix"]
+
+def read_json():
+    with open(fr"config.json", "r") as f:
+        data = json.load(f)
+    return data
+
+
+config = read_json()
 intents = discord.Intents.default()
 intents.members = True
-intents.reactions = True
 bot = commands.Bot(
-    command_prefix='.',
+    command_prefix=get_prefix,
     case_insensitive=True,
     intents=intents
 )
+bot.remove_command('help')
+
 
 @bot.event
 async def on_ready():
-    print('Essentials has successfully booted up! | v 2.0.0 | Credit to Vixen and Ammar')
+    print('Essentials has successfully booted up! | v.2 | Credit to Vixen and Ammar')
+
 
 initial_extensions = [
     'discord_verification',
@@ -24,8 +42,8 @@ initial_extensions = [
     'erh',
     'eval',
     'fun',
-    'roblox_verification',
-    'reload'
+    'help',
+    'config'
 ]
 
 if __name__ == "__main__":
@@ -42,19 +60,15 @@ if __name__ == "__main__":
 
 loop = asyncio.get_event_loop()
 bot.pool = loop.run_until_complete(asyncpg.create_pool(
-                            host="localhost",
-                            port='5433',
-                            database="timedsys",
-                            user="postgres",
-                            password="Bruhbruh123",
-                                    ))
+    host=config["database_info"]["host"],
+    port=config["database_info"]["port"],
+    database=config["database_info"]["database"],
+    user=config["database_info"]["user"],
+    password=config["database_info"]["password"],
+))
 
-def set_token():
-    token = open('./essentials_token.txt', 'r').read()
-    return token
-
+bot.token = config["token"]
 bot.run(
-    # bot.token,
-    set_token(),
+    bot.token,
     reconnect=True
 )
