@@ -43,7 +43,8 @@ initial_extensions = [
     'eval',
     'fun',
     'help',
-    'config'
+    'config',
+    'roblox_verification'
 ]
 
 if __name__ == "__main__":
