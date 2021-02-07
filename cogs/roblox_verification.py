@@ -4,18 +4,15 @@ import random
 import requests
 from discord.ext.commands import BucketType
 
-
 class Robloxverify(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
     async def is_enabled(self, ctx):
-        data = await self.bot.config.find(ctx.guild.id)
-        if data is None:
+        data = await self.bot.pool.fetchval('SELECT enabled FROM roblox_ver WHERE guild_id = 1$', ctx.guild.id)
+        if data["enabled"] is False:
             return False
-        elif "roblox_role" in data:
-            return True
-        return False
+        return True
 
     async def is_verified(self, ctx):
         data = await self.bot.roblox.find(0)
@@ -28,8 +25,8 @@ class Robloxverify(commands.Cog):
         return False
 
     async def get_verified_role(self, ctx):
-        data = await self.bot.config.find(ctx.guild.id)
-        return ctx.guild.get_role(["roblox_role"])
+        data = await self.bot.pool.fetchval('SELECT verified_role FROM roblox_ver WHERE guild_id = $1', ctx.guild.id)
+        return ctx.guild.get_role(data["verified_role"])
 
     @commands.command()
     @commands.cooldown(1, 3, commands.BucketType.user)
@@ -72,10 +69,11 @@ class Robloxverify(commands.Cog):
                 role = ctx.guild.get_role(ap2.content)
 
                 if role is None:
-                    await ctx.send('Invalid role, rerun the command.')
-                elif role is not None:
-                    await self.bot.config.upsert({"_id": ctx.guild.id, "roblox_role": role.id})
-                    await ctx.send('Succesfully setup roblox verification.')
+                    return await ctx.send('Invalid role, rerun the command.')
+
+                await self.bot.pool.execute('UPDATE roblox_ver SET enabled = $1, verified_role = $2 WHERE guildid = $3', 
+                                            True, role.id, ctx.guild.id)
+                await ctx.send('Succesfully setup roblox verification.')
 
         else:
             await ctx.send('Setup stopped.')
@@ -157,19 +155,6 @@ class Robloxverify(commands.Cog):
                 await ctx.send('You\'re already verified.')
         elif await self.is_enabled(ctx) is False:
             await ctx.send('This server has not enabled roblox verification.')
-
-    @commands.command()
-    @commands.cooldown(1, 3, commands.BucketType.user)
-    @commands.guild_only()
-    @commands.has_permissions(administrator=True)
-    async def disverify(self, ctx):
-        if self.is_verified(ctx) is True:
-            await self.bot.roblox.unset({"_id": 0, str(ctx.author.id): 1})
-            await ctx.send("Unverified")
-        else:
-            await ctx.send(
-                "You're not verified, meaning that you can't be unverified because you aren't verified :neutral_face:")
-
 
 def setup(bot):
     bot.add_cog(Robloxverify(bot))
