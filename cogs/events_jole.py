@@ -13,8 +13,8 @@ class Event_jole(commands.Cog):
             async with connection.transaction():
                 await connection.execute(sqlify('./sql_files/_main/_guild_join.sql'), guild.id, '.')
 
-                await connection.execute(sqlify('./sql_files/modules/dis_ver_join.sql'), None, None, None, guild.id)
-                await connection.execute(sqlify('./sql_files/modules/roblox_ver_join.sql'), None, None, None, guild.id)
+                await connection.execute(sqlify('./sql_files/modules/dis_ver_join.sql'), False, None, None, guild.id)
+                await connection.execute(sqlify('./sql_files/modules/roblox_ver_join.sql'), False, None, None, guild.id)
                 await connection.execute(sqlify('./sql_files/modules/ticket_sys_join.sql'), False, guild.id, None, None, None, None)
 
     @commands.Cog.listener()
